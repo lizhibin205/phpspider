@@ -7,4 +7,5 @@ require dirname(__FILE__).'/../core/init.php';
 
 $configs = [
     'name' => 'm.win4000.com',
+    ''
 ];
