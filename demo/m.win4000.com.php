@@ -8,7 +8,7 @@ require dirname(__FILE__).'/../core/init.php';
 $configs = [
     'name' => 'm.win4000.com',
     'log_show' => false,
-    'log_file' => 'data/phpspider.log',
+    'log_file' => PATH_DATA .'/phpspider.log',
     'input_encoding' => 'utf-8',
     'output_encoding' => 'utf-8',
     'tasknum' => 1,
@@ -23,8 +23,9 @@ $configs = [
     'max_fields' => 0,
     'user_agent' => phpspider::AGENT_IOS,
     'export' => [
-        'type' => 'csv',
-        'file' => 'data/result.csv'
+        'type' => 'sql',
+        'file' => PATH_DATA . '/result.csv',
+        'table' => 'mv_spider_mv'
     ],
     //核心爬虫配置部分
     'domains' => ['m.win4000.com'],
