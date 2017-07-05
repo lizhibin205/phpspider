@@ -24,7 +24,7 @@ $configs = [
     'user_agent' => phpspider::AGENT_IOS,
     'export' => [
         'type' => 'sql',
-        'file' => PATH_DATA . '/result.csv',
+        'file' => PATH_DATA . '/result_v2.csv',
         'table' => 'mv_spider_mv'
     ],
     //核心爬虫配置部分
@@ -71,8 +71,21 @@ $configs = [
         ]
     ],
 ];
-
 $spider = new phpspider($configs);
+
+$spider->on_content_page = function ($page, $content, $phpspider) {
+    preg_match("/(\d+)(_\d+)?\.html$/", $page['url'], $matches);
+    $imageId = $matches[1];
+    $urlPage = isset($matches[2]) ? substr($matches[2], 1) : 1;
+    $nowPage = selector::select($content, "//div[contains(@class,'title')]//h2/i");
+    if ($urlPage == $nowPage) {
+        return true;
+    } else {
+        $nextPage = $nowPage + 1;
+        $phpspider->add_url("http://m.win4000.com/meinv{$imageId}_{$nextPage}.html");
+        return false;
+    }
+};
 $spider->on_extract_field = function ($fieldname, $data, $page) {
     switch ($fieldname) {
         case 'mv_id':
