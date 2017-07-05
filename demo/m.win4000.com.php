@@ -33,7 +33,6 @@ $configs = [
     //内容页规则
     'content_url_regexes' => [
         "http://m.win4000.com/meinv\d+.html",
-        "http://m.win4000.com/meinv\d+_\d.html",
     ],
     //列表页规则
     'list_url_regexes' => [
@@ -73,32 +72,37 @@ $configs = [
 ];
 $spider = new phpspider($configs);
 
-$spider->on_content_page = function ($page, $content, $phpspider) {
-    preg_match("/(\d+)(_\d+)?\.html$/", $page['url'], $matches);
-    $imageId = $matches[1];
-    $urlPage = isset($matches[2]) ? substr($matches[2], 1) : 1;
-    $nowPage = selector::select($content, "//div[contains(@class,'title')]//h2/i");
-    if ($urlPage == $nowPage) {
-        return true;
-    } else {
-        $nextPage = $nowPage + 1;
-        $phpspider->add_url("http://m.win4000.com/meinv{$imageId}_{$nextPage}.html");
-        return false;
-    }
-};
 $spider->on_extract_field = function ($fieldname, $data, $page) {
     switch ($fieldname) {
         case 'mv_id':
-            if (preg_match("/(\d+)(_\d+)?\.html$/", $page['url'], $matches) === 1) {
-                $child = isset($matches[2]) ? $matches[2] : "_1";
-                $data = "{$matches[1]}{$child}";
+            if (preg_match("/(\d+)(?:_\d+)?\.html$/", $page['url'], $matches) === 1) {
+                $data = $matches[1];
             } else {
-                $data = "0_0";
+                $data = "0";
             }
             break;
         case 'mv_title':
-            $data = strip_tags($data);
+			preg_match("/^(.*)（\d+\/(\d+)）$/", strip_tags($data), $matches);
+			$data = isset($matches[1]) ? $matches[1] : '未知标题';
             break;
+		case 'mv_image':
+			$imageList = [$data];
+			$index = 1;
+			if (preg_match("/(\d+)(?:_\d+)?\.html$/", $page['url'], $matches) === 1) {
+                $imageId = $matches[1];
+				while (true) {
+					$index += 1;
+					$html = requests::get("http://m.win4000.com/meinv{$imageId}_{$index}.html");
+					$result = selector::select($html, "//div[contains(@class,'wallpaper-container')]//a//img");
+					if (!empty($result)) {
+						$imageList[] = $result;
+					} else {
+						break;
+					}
+				}					
+            } 
+			$data = json_encode($imageList);
+			break;
         default:
     }
     return $data;
