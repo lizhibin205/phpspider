@@ -23,7 +23,7 @@ $configs = [
     'max_fields' => 0,
     'user_agent' => phpspider::AGENT_IOS,
     'export' => [
-        'type' => 'sql',
+        'type' => 'csv',
         'file' => PATH_DATA . '/result_v2.csv',
         'table' => 'mv_spider_mv'
     ],
