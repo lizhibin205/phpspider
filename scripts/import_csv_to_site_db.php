@@ -11,7 +11,6 @@ $fp = fopen($csvFileName, "r");
 $line = 0;
 $success = 0;
 while (!feof($fp)) {
-    $data = trim(fgets($fp));
 	list($imageId, $imageTitle, $imageType, $jsonImageList) = fgetcsv($fp);
 	$imageTitle = str_replace("美桌网", "", $imageTitle);
 	$jsonImageList = str_replace('""', '","', $jsonImageList);
