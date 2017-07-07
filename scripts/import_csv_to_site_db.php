@@ -8,6 +8,8 @@ mysql_set_charset("utf8", $db);
 
 $csvFileName = dirname(__DIR__) . "/data/result_v2.csv";
 $fp = fopen($csvFileName, "r");
+$line = 0;
+$success = 0;
 while (!feof($fp)) {
     $data = trim(fgets($fp));
 	list($imageId, $imageTitle, $imageType, $jsonImageList) = fgetcsv($fp);
@@ -18,6 +20,11 @@ while (!feof($fp)) {
 	$sql = "INSERT INTO `mv_site_mv`(`image_id`,`image_page_total`,`image_title`,`image_type`,`image_url`,`image_from_url`)
 	VALUES({$imageId},{$imageListCount},'".mysql_real_escape_string($imageTitle)."','".mysql_real_escape_string($imageType)."','[]','".mysql_real_escape_string($jsonImageList)."')";
 	if (mysql_query($sql) === false) {
-		echo $sql, PHP_EOL;
+        $logFile = dirname(__DIR__) . "/data/log_result_v2.log";
+		file_put_contents($logFile, $sql . PHP_EOL, FILE_APPEND);
+	} else {
+        ++$success;
 	}
+	++$line;
 }
+echo "read {$line} and sucess {$success}", PHP_EOL;
