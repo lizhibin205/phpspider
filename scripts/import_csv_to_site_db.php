@@ -11,6 +11,7 @@ $fp = fopen($csvFileName, "r");
 while (!feof($fp)) {
     $data = trim(fgets($fp));
 	list($imageId, $imageTitle, $imageType, $jsonImageList) = fgetcsv($fp);
+	$imageTitle = str_replace("美桌网", "", $imageTitle);
 	$jsonImageList = str_replace('""', '","', $jsonImageList);
 	$imageList = json_decode($jsonImageList, true);
 	$imageListCount = count($imageList);
